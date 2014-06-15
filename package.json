@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "zuul --phantom -- test/*.test.js",
-    "mocha": "mocha test/asset.test.js"
+    "mocha": "mocha test/file.test.js"
   },
   "repository": {
     "type": "git",

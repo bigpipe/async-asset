@@ -159,6 +159,8 @@ AsyncAsset.prototype.progress = function progress(url, fn) {
     file.callbacks.push(fn);
   } else if (File.LOADED === file.readyState) {
     fn();
+  } else if (File.DEAD === file.readyState) {
+    return false;
   }
 
   return true;

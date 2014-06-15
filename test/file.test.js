@@ -100,6 +100,12 @@ describe('async-asset', function () {
         assume(file.readyState).to.equal(File.DEAD);
         assume(file.cleanup).to.have.length(0);
       });
+
+      it('does not wine about missing callbacks if there is nothing', function () {
+        var file = new File('url');
+
+        file.destroy();
+      });
     });
   });
 });
