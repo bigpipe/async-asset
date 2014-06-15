@@ -79,6 +79,15 @@ File.prototype.destroy = function destroy() {
 };
 
 /**
+ * Asynchronously load JavaScript and Stylesheets.
+ *
+ * Options:
+ *
+ * - document: Document where elements should be created from.
+ * - prefix: Prefix for the id that we use to poll for stylesheet completion.
+ * - timeout: Load timeout.
+ * - onload: Stylesheet onload supported.
+ *
  * @constructor
  * @param {HTMLElement} root The root element we should append to.
  * @param {Object} options Configuration.
@@ -337,6 +346,10 @@ AsyncAsset.prototype.link = function links(url, fn) {
     };
   }
 
+  link.href = url;
+  link.type = 'text/css';
+  link.rel = 'stylesheet';
+
   this.root.appendChild(link);
   return this.setInterval(url);
 };
@@ -403,7 +416,7 @@ AsyncAsset.prototype.setInterval = function setIntervals(url) {
     }
 
     //
-    // If we can interate over the async.meta object there are still objects
+    // If we can iterate over the async.meta object there are still objects
     // left that needs to be polled.
     //
     for (url in async.meta) return;
