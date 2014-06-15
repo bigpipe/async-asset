@@ -9,13 +9,17 @@
  * @api private
  */
 function File(url, fn) {
+  if (!(this instanceof File)) return new File(url, fn);
+
   this.readyState = File.LOADING;
   this.start = +new Date();
   this.callbacks = [];
   this.cleanup = [];
   this.url = url;
 
-  if (fn) this.callbacks.push(fn);
+  if ('function' === typeof fn) {
+    this.callbacks.push(fn);
+  }
 }
 
 //
@@ -47,7 +51,7 @@ File.prototype.exec = function exec(err) {
 
   if (!this.callbacks.length) return this;
   for (var i = 0; i < this.callbacks.length; i++) {
-    this.callbacks[i](err);
+    this.callbacks[i].apply(this.callbacks[i], arguments);
   }
 
   this.callbacks.length = 0;
