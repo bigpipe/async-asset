@@ -268,7 +268,7 @@ AsyncAsset.prototype.script = function scripts(url, fn) {
  * @param {String} url URL to load.
  * @param {Function} fn Completion callback.
  * @returns {AsyncAsset}
- * @api public
+ * @api private
  */
 AsyncAsset.prototype.style = function style(url, fn) {
   if (!this.document.styleSheet) return this.link(url, fn);
@@ -322,7 +322,7 @@ AsyncAsset.prototype.style = function style(url, fn) {
  * @param {String} url URL to load.
  * @param {Function} fn Completion callback.
  * @returns {AsyncAsset}
- * @api public
+ * @api private
  */
 AsyncAsset.prototype.link = function links(url, fn) {
   var link = this.document.createElement('link')
