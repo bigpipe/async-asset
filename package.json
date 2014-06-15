@@ -4,7 +4,7 @@
   "description": "async loading of stylesheet and javascript files",
   "main": "index.js",
   "scripts": {
-    "test": "zuul --phantom -- test/asset.test.js",
+    "test": "zuul --phantom -- test/*.test.js",
     "mocha": "mocha test/asset.test.js"
   },
   "repository": {
