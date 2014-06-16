@@ -388,7 +388,7 @@ AsyncAsset.prototype.setInterval = function setIntervals(url) {
   this.setInterval.timer = setInterval(function interval() {
     var now = +new Date()
       , url, file, style, meta
-      , compute = window.getComputeStyle;
+      , compute = window.getComputedStyle;
 
     for (url in async.meta) {
       meta = async.meta[url];
