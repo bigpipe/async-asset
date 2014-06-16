@@ -174,13 +174,18 @@ AsyncAsset.prototype.progress = function progress(url, fn) {
  * @api private
  */
 AsyncAsset.prototype.callback = function callback(url, err) {
-  var file = this.files[url];
+  var file = this.files[url]
+    , meta = this.meta[url];
 
   if (!file) return;
 
   file.exec(err);
 
   if (err) delete this.files[url];
+  if (meta) {
+    meta.parentNode.removeChild(meta);
+    delete this.meta[url];
+  }
 };
 
 /**
