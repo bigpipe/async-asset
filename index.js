@@ -14,11 +14,12 @@ function File(url, fn) {
   this.readyState = File.LOADING;
   this.start = +new Date();
   this.callbacks = [];
+  this.dependent = 0;
   this.cleanup = [];
   this.url = url;
 
   if ('function' === typeof fn) {
-    this.callbacks.push(fn);
+    this.add(fn);
   }
 }
 
@@ -38,6 +39,43 @@ File.LOADED   = 1;
 File.prototype.unload = function unload(fn) {
   this.cleanup.push(fn);
   return this;
+};
+
+/**
+ * Add a new dependent.
+ *
+ * @param {Function} fn Completion callback.
+ * @returns {Boolean} Callback successfully added or queued.
+ * @api private
+ */
+File.prototype.add = function add(fn) {
+  this.dependent++;
+
+  if (File.LOADING === this.readyState) {
+    this.callbacks.push(fn);
+  } else if (File.LOADED === this.readyState) {
+    fn();
+  } else {
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Remove a dependent. If all dependent's are removed we will automatically
+ * destroy the loaded file from the environment.
+ *
+ * @returns {
+ * @api private
+ */
+File.prototype.remove = function remove() {
+  if (0 === --this.dependent) {
+    this.destroy();
+    return true;
+  }
+
+  return false;
 };
 
 /**
@@ -73,7 +111,7 @@ File.prototype.destroy = function destroy() {
   }
 
   this.readyState = File.DEAD;
-  this.cleanup.length = 0;
+  this.cleanup.length = this.dependent = 0;
 
   return this;
 };
@@ -120,10 +158,18 @@ function AsyncAsset(root, options) {
  * @api public
  */
 AsyncAsset.prototype.remove = function remove(url) {
-  if (!(url in this.files)) return this;
+  var file = this.files[url];
 
-  this.files[url].destroy();
-  delete this.files[url];
+  if (!file) return this;
+
+  //
+  // If we are fully removed, just nuke the reference.
+  //
+  if (file.remove()) {
+    delete this.files[url];
+  }
+
+  return this;
 };
 
 /**
@@ -152,18 +198,7 @@ AsyncAsset.prototype.add = function add(url, fn) {
  */
 AsyncAsset.prototype.progress = function progress(url, fn) {
   if (!(url in this.files)) return false;
-
-  var file = this.files[url];
-
-  if (File.LOADING === file.readyState) {
-    file.callbacks.push(fn);
-  } else if (File.LOADED === file.readyState) {
-    fn();
-  } else if (File.DEAD === file.readyState) {
-    return false;
-  }
-
-  return true;
+  return this.files[url].add(fn);
 };
 
 /**
