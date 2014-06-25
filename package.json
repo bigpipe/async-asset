@@ -4,10 +4,10 @@
   "description": "async loading of stylesheet and javascript files",
   "main": "index.js",
   "scripts": {
-    "test": "npm run-script browserify-tests && npm run-script phantom",
+    "browserify-tests": "browserify test/*.test.js -o test/phantom.js --debug",
+    "mocha": "mocha test/file.test.js",
     "phantom": "mocha-phantomjs test/phantom.html",
-    "browserify-tests": "browserify test/*.test.js -o test/phantom.js",
-    "mocha": "mocha test/file.test.js"
+    "test": "npm run-script browserify-tests && npm run-script phantom"
   },
   "repository": {
     "type": "git",
