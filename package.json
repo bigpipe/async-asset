@@ -4,7 +4,10 @@
   "description": "async loading of stylesheet and javascript files",
   "main": "index.js",
   "scripts": {
-    "test": "zuul --phantom -- test/*.test.js",
+    "test": "npm run-script compile && npm run-script phantom",
+    "zuul": "zuul --phantom -- test/*.test.js",
+    "phantom": "mocha-phantomjs test/phantom.html",
+    "compile": "browserify test/*.test.js -o test/phantom.js",
     "mocha": "mocha test/file.test.js"
   },
   "repository": {
@@ -30,7 +33,9 @@
   "homepage": "https://github.com/bigpipe/async-asset",
   "devDependencies": {
     "assume": "0.0.x",
+    "browserify": "^4.1.11",
     "mocha": "1.20.x",
+    "mocha-phantomjs": "3.5.x",
     "phantomjs": "1.9.x",
     "pre-commit": "0.0.x",
     "zuul": "1.7.x"
