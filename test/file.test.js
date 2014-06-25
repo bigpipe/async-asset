@@ -73,7 +73,8 @@ describe('async-asset', function () {
 
       it('executes the callback if we are loaded', function () {
         var file = new File('url')
-          , called = false;
+          , called = false
+          , bool;
 
         file.readyState = File.LOADED;
 
