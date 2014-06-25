@@ -47,6 +47,69 @@ describe('async-asset', function () {
       });
     });
 
+    describe('.add', function () {
+      it('adds callbacks if we are loading', function () {
+        var file = new File('url');
+
+        assume(file.callbacks).to.have.length(0);
+        assume(file.dependent).to.equal(0);
+
+        var bool = file.add(function () {
+          throw new Error('I should not execute yet');
+        });
+
+        assume(file.callbacks).to.have.length(1);
+        assume(file.dependent).to.equal(1);
+        assume(bool).to.be.true();
+
+        bool = file.add(function () {
+          throw new Error('I should not execute yet');
+        });
+
+        assume(file.callbacks).to.have.length(2);
+        assume(file.dependent).to.equal(2);
+        assume(bool).to.be.true();
+      });
+
+      it('executes the callback if we are loaded', function () {
+        var file = new File('url')
+          , called = false;
+
+        file.readyState = File.LOADED;
+
+        assume(file.callbacks).to.have.length(0);
+        assume(file.dependent).to.equal(0);
+
+        for (var i = 0; i < 10; i++) {
+          bool = file.add(function () { called = true; });
+        }
+
+        assume(file.callbacks).to.have.length(0);
+        assume(file.dependent).to.equal(10);
+        assume(called).to.be.true();
+        assume(bool).to.be.true();
+      });
+
+      it('does not queue or execute callback when dead', function () {
+        var file = new File('url')
+          , called = false;
+
+        file.readyState = File.DEAD;
+
+        assume(file.callbacks).to.have.length(0);
+        assume(file.dependent).to.equal(0);
+
+        var bool = file.add(function () {
+          called = true;
+        });
+
+        assume(file.callbacks).to.have.length(0);
+        assume(file.dependent).to.equal(0);
+        assume(called).to.be.false();
+        assume(bool).to.be.false();
+      });
+    });
+
     describe('.exec', function () {
       it('executes all callbacks', function (next) {
         var file = new File('url', next);

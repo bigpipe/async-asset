@@ -49,8 +49,6 @@ File.prototype.unload = function unload(fn) {
  * @api private
  */
 File.prototype.add = function add(fn) {
-  this.dependent++;
-
   if (File.LOADING === this.readyState) {
     this.callbacks.push(fn);
   } else if (File.LOADED === this.readyState) {
@@ -59,6 +57,7 @@ File.prototype.add = function add(fn) {
     return false;
   }
 
+  this.dependent++;
   return true;
 };
 
