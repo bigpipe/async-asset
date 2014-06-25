@@ -1,6 +1,0 @@
-name: async-asset
-ui: mocha-bdd
-server: ./test/server.js
-browsers:
-  - name: chrome
-    version: latest
