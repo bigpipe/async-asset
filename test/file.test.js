@@ -110,6 +110,31 @@ describe('async-asset', function () {
       });
     });
 
+    describe('.remove', function () {
+      it('decrementes the dependent', function () {
+        var file = new File('url');
+
+        file.dependent = 10;
+        var bool = file.remove();
+
+        assume(bool).to.be.false();
+        assume(file.dependent).to.equal(9);
+      });
+
+      it('calls the destroy method when there are no more dependent', function (next) {
+        var file = new File('url');
+
+        file.unload(function () { setTimeout(next, 0); });
+        file.dependent = 2;
+
+        assume(file.remove()).to.equal(false);
+        assume(file.dependent).to.equal(1);
+        assume(file.remove()).to.equal(true);
+        assume(file.dependent).to.equal(0);
+        assume(file.readState).to.equal(File.DEATH);
+      });
+    });
+
     describe('.exec', function () {
       it('executes all callbacks', function (next) {
         var file = new File('url', next);
