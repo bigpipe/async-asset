@@ -59,4 +59,18 @@ describe('async-asset', function () {
       assets.progress('url', next);
     });
   });
+
+  describe('.add', function () {
+    it('loads a JavaScript file', function (next) {
+      assets.add('./fixtures/1.js', function (err) {
+        if (err) return next(err);
+
+        assume(x).to.be.a('object');
+        assume(x.one).to.be.true();
+
+        delete x.one;
+        next();
+      });
+    });
+  });
 });
