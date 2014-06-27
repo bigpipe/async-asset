@@ -470,6 +470,48 @@ AsyncAsset.prototype.setInterval = function setIntervals(url) {
 };
 
 /**
+ * Prefetch resources without executing them. This ensures that the next lookup
+ * is primed in the cache when we need them. Of course this is only possible
+ * when the server sends the correct caching headers.
+ *
+ * @param {Array} urls The URLS that need to be cached.
+ * @returns {AsyncAsset}
+ * @api private
+ */
+AsyncAsset.prototype.prefetch = function prefetch(urls) {
+  //
+  // This check is here because I'm lazy, I don't want to add an `isArray` check
+  // to the code. So we're just going to flip the logic here. If it's an string
+  // transform it to an array.
+  //
+  if ('string' === typeof urls) urls = [urls];
+
+  var IE = navigator.userAgent.indexOf(' Trident/')
+    , img = /\.(jpg|jpeg|png|gif|webp)$/
+    , node;
+
+  for (var i = 0, l = urls.length; i < l; i++) {
+    if (IE || img.test(urls[i])) {
+      new Image().src = urls[i];
+      continue;
+    }
+
+    node = document.createElement('object');
+    node.height = node.width = 0;
+
+    //
+    // Position absolute is required because it can still add some minor spacing
+    // at the bottom of a page and that will break sticky footer
+    // implementations.
+    //
+    node.style.position = 'absolute';
+    document.body.appendChild(node);
+  }
+
+  return this;
+};
+
+/**
  * Try to detect if this browser supports the onload events on the link tag.
  * It's a known cross browser bug that can affect WebKit, FireFox and Opera.
  * Internet Explorer is the only browser that supports the onload event
