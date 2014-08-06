@@ -180,11 +180,13 @@ AsyncAsset.prototype.remove = function remove(url) {
  * @api public
  */
 AsyncAsset.prototype.add = function add(url, fn) {
-  if (this.progress(url, fn)) return this;
-  if ('js' === this.type(url)) return this.script(url, fn);
-  if ('css' === this.type(url)) return this.style(url, fn);
+  var type = this.type(url);
 
-  throw new Error('Unsupported file type');
+  if (this.progress(url, fn)) return this;
+  if ('js' === type) return this.script(url, fn);
+  if ('css' === type) return this.style(url, fn);
+
+  throw new Error('Unsupported file type: '+ type);
 };
 
 /**

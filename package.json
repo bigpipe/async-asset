@@ -4,10 +4,7 @@
   "description": "async loading of stylesheet and javascript files",
   "main": "index.js",
   "scripts": {
-    "browserify-tests": "browserify test/*.test.js -o test/phantom.js --debug",
-    "mocha": "mocha test/file.test.js",
-    "phantom": "mocha-phantomjs test/phantom.html",
-    "test": "npm run-script browserify-tests && npm run-script phantom"
+    "test": "illuminati --phantom"
   },
   "repository": {
     "type": "git",
@@ -31,11 +28,6 @@
   },
   "homepage": "https://github.com/bigpipe/async-asset",
   "devDependencies": {
-    "assume": "0.0.x",
-    "browserify": "^4.1.11",
-    "mocha": "1.20.x",
-    "mocha-phantomjs": "3.5.x",
-    "phantomjs": "1.9.x",
-    "pre-commit": "0.0.x"
+    "illuminati": "0.0.x"
   }
 }
