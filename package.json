@@ -29,5 +29,8 @@
   "homepage": "https://github.com/bigpipe/async-asset",
   "devDependencies": {
     "illuminati": "0.0.x"
+  },
+  "dependencies": {
+    "floppy": "1.0.x"
   }
 }

@@ -1,119 +1,6 @@
 'use strict';
 
-/**
- * Representation of one single file that will be loaded.
- *
- * @constructor
- * @param {String} url The file URL.
- * @param {Function} fn Optional callback.
- * @api private
- */
-function File(url, fn) {
-  if (!(this instanceof File)) return new File(url, fn);
-
-  this.readyState = File.LOADING;
-  this.start = +new Date();
-  this.callbacks = [];
-  this.dependent = 0;
-  this.cleanup = [];
-  this.url = url;
-
-  if ('function' === typeof fn) {
-    this.add(fn);
-  }
-}
-
-//
-// The different readyStates for our File class.
-//
-File.DEAD     = -1;
-File.LOADING  = 0;
-File.LOADED   = 1;
-
-/**
- * Added cleanup hook.
- *
- * @param {Function} fn Clean up callback
- * @api public
- */
-File.prototype.unload = function unload(fn) {
-  this.cleanup.push(fn);
-  return this;
-};
-
-/**
- * Add a new dependent.
- *
- * @param {Function} fn Completion callback.
- * @returns {Boolean} Callback successfully added or queued.
- * @api private
- */
-File.prototype.add = function add(fn) {
-  if (File.LOADING === this.readyState) {
-    this.callbacks.push(fn);
-  } else if (File.LOADED === this.readyState) {
-    fn();
-  } else {
-    return false;
-  }
-
-  this.dependent++;
-  return true;
-};
-
-/**
- * Remove a dependent. If all dependent's are removed we will automatically
- * destroy the loaded file from the environment.
- *
- * @returns {
- * @api private
- */
-File.prototype.remove = function remove() {
-  if (0 === --this.dependent) {
-    this.destroy();
-    return true;
-  }
-
-  return false;
-};
-
-/**
- * Execute the callbacks.
- *
- * @param {Error} err Optional error.
- * @api public
- */
-File.prototype.exec = function exec(err) {
-  this.readyState = File.LOADED;
-
-  if (!this.callbacks.length) return this;
-  for (var i = 0; i < this.callbacks.length; i++) {
-    this.callbacks[i].apply(this.callbacks[i], arguments);
-  }
-
-  this.callbacks.length = 0;
-  if (err) this.destroy();
-
-  return this;
-};
-
-/**
- * Destroy the file.
- *
- * @api public
- */
-File.prototype.destroy = function destroy() {
-  this.exec(new Error('Resource has been destroyed before it was loaded'));
-
-  if (this.cleanup.length) for (var i = 0; i < this.cleanup.length; i++) {
-    this.cleanup[i]();
-  }
-
-  this.readyState = File.DEAD;
-  this.cleanup.length = this.dependent = 0;
-
-  return this;
-};
+var Floppy = require('floppy');
 
 /**
  * Asynchronously load JavaScript and Stylesheets.
@@ -164,7 +51,7 @@ AsyncAsset.prototype.remove = function remove(url) {
   //
   // If we are fully removed, just nuke the reference.
   //
-  if (file.remove()) {
+  if (file.eject()) {
     delete this.files[url];
   }
 
@@ -245,7 +132,7 @@ AsyncAsset.prototype.type = function type(url) {
  */
 AsyncAsset.prototype.script = function scripts(url, fn) {
   var script = this.document.createElement('script')
-    , file = this.files[url] = new File(url, fn)
+    , file = this.files[url] = new Floppy(url, fn)
     , async = this;
 
   //
@@ -316,7 +203,7 @@ AsyncAsset.prototype.script = function scripts(url, fn) {
 AsyncAsset.prototype.style = function style(url, fn) {
   if (!this.document.styleSheet) return this.link(url, fn);
 
-  var file = this.file[url] = new File(url, fn)
+  var file = this.file[url] = new Floppy(url, fn)
     , sheet, i = 0;
 
   //
@@ -369,7 +256,7 @@ AsyncAsset.prototype.style = function style(url, fn) {
  */
 AsyncAsset.prototype.link = function links(url, fn) {
   var link = this.document.createElement('link')
-    , file = this.files[url] = new File(url, fn)
+    , file = this.files[url] = new Floppy(url, fn)
     , async = this;
 
   file.unload(function unload() {
@@ -448,8 +335,8 @@ AsyncAsset.prototype.setInterval = function setIntervals(url) {
 
       if (
            !file
-        || file.readyState === File.DEAD
-        || file.readyState === File.LOADED
+        || file.readyState === Floppy.DEAD
+        || file.readyState === Floppy.LOADED
         || (now - file.start > async.timeout)
       ) {
         if (file) file.exec(new Error('Stylesheet loading has timed out'));
@@ -549,7 +436,7 @@ AsyncAsset.prototype.feature = function detect() {
 //
 // Expose the file instance.
 //
-AsyncAsset.File = File;
+AsyncAsset.Floppy = Floppy;
 
 //
 // Expose the asset loader
