@@ -1,6 +1,7 @@
 'use strict';
 
-var Floppy = require('floppy');
+var script = require('async-script')
+  , Floppy = require('floppy');
 
 /**
  * Asynchronously load JavaScript and Stylesheets.
@@ -131,63 +132,12 @@ AsyncAsset.prototype.type = function type(url) {
  * @api private
  */
 AsyncAsset.prototype.script = function scripts(url, fn) {
-  var script = this.document.createElement('script')
-    , file = this.files[url] = new Floppy(url, fn)
-    , async = this;
+  var floppy = this.files[url] = new Floppy(url, fn)
+    , unload;
 
-  //
-  // Add an unload handler which removes the DOM node from the root element.
-  //
-  file.unload(function unload() {
-    script.onerror = script.onload = script.onreadystatechange = null;
-    if (script.parentNode) script.parentNode.removeChild(script);
-  });
-
-  //
-  // Required for FireFox 3.6 / Opera async loading. Normally browsers would
-  // load the script async without this flag because we're using createElement
-  // but these browsers need explicit flags.
-  //
-  script.async = true;
-
-  //
-  // onerror is not triggered by all browsers, but should give us a clean
-  // indication of failures so it doesn't matter if you're browser supports it
-  // or not, we still want to listen for it.
-  //
-  script.onerror = function onerror() {
-    script.onerror = script.onload = script.onreadystatechange = null;
-    async.callback(url, new Error('Failed to load the script.'));
-  };
-
-  //
-  // All "latest" browser seem to support the onload event for detecting full
-  // script loading. Internet Explorer 11 no longer needs to use the
-  // onreadystatechange method for completion indication.
-  //
-  script.onload = function onload() {
-    script.onerror = script.onload = script.onreadystatechange = null;
-    async.callback(url);
-  };
-
-  //
-  // Fall-back for older IE versions, they do not support the onload event on the
-  // script tag and we need to check the script readyState to see if it's
-  // successfully loaded.
-  //
-  script.onreadystatechange = function onreadystatechange() {
-    if (this.readyState in { loaded: 1, complete: 1 }) {
-      script.onerror = script.onload = script.onreadystatechange = null;
-      async.callback(url);
-    }
-  };
-
-  //
-  // The src needs to be set after the element has been added to the document.
-  // If I remember correctly it had to do something with an IE8 bug.
-  //
-  this.root.appendChild(script);
-  script.src = url;
+  floppy.unload(script(this.document, url, function done(err) {
+    floppy.exec(err);
+  }));
 
   return this;
 };
