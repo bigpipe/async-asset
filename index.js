@@ -291,6 +291,7 @@ AsyncAsset.prototype.setInterval = function setIntervals(url) {
         || (now - file.start > async.timeout)
       ) {
         if (file) file.exec(new Error('Stylesheet loading has timed out'));
+
         meta.parentNode.removeChild(meta);
         delete async.meta[url];
       }
