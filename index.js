@@ -270,10 +270,11 @@ AsyncAsset.prototype.setInterval = function setIntervals(url) {
 
     for (url in async.meta) {
       meta = async.meta[url];
+
       if (!meta) continue;
 
       file = async.files[url];
-      style = compute ? getComputedStyle(meta) : meta.currentStyle;
+      style = compute ? getComputedStyle(meta, null) : meta.currentStyle;
 
       //
       // We assume that CSS added an increased style to the given prefixed CSS
