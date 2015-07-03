@@ -26,6 +26,12 @@ describe('async-asset', function () {
       assume(assets.type('/FOO/BAR.CSS')).to.equal('css');
       assume(assets.type('/FOO/BAR.JPG')).to.equal('jpg');
     });
+
+    it('does not care about query string', function () {
+      assume(assets.type('/foo/bar.js?bazz')).to.equal('js');
+      assume(assets.type('/foo/bar.css?bazz=buzz')).to.equal('css');
+      assume(assets.type('/foo/bar.jpg?ok=true&bazz=buzz')).to.equal('jpg');
+    });
   });
 
   describe('.progress', function () {
