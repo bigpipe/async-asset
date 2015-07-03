@@ -14,7 +14,7 @@ describe('async-asset', function () {
     assume(AsyncAsset).to.be.a('function');
   });
 
-  describe('.type', function () {
+  describe.only('.type', function () {
     it('returns the type of the file', function () {
       assume(assets.type('/foo/bar.js')).to.equal('js');
       assume(assets.type('/foo/bar.css')).to.equal('css');
@@ -25,6 +25,12 @@ describe('async-asset', function () {
       assume(assets.type('/FOO/BAR.JS')).to.equal('js');
       assume(assets.type('/FOO/BAR.CSS')).to.equal('css');
       assume(assets.type('/FOO/BAR.JPG')).to.equal('jpg');
+    });
+
+    it('does not care about query string', function () {
+      assume(assets.type('/foo/bar.js?bazz')).to.equal('js');
+      assume(assets.type('/foo/bar.css?bazz=buzz')).to.equal('css');
+      assume(assets.type('/foo/bar.jpg?ok=true&bazz=buzz')).to.equal('jpg');
     });
   });
 

@@ -120,7 +120,8 @@ AsyncAsset.prototype.callback = function callback(url, err) {
  * @api private
  */
 AsyncAsset.prototype.type = function type(url) {
-  return url.split('.').pop().toLowerCase();
+  return url.split('.').pop().toLowerCase()
+    .replace(/(\?.*)$/, '');
 };
 
 /**
