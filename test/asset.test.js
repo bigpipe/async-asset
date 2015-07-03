@@ -14,7 +14,7 @@ describe('async-asset', function () {
     assume(AsyncAsset).to.be.a('function');
   });
 
-  describe.only('.type', function () {
+  describe('.type', function () {
     it('returns the type of the file', function () {
       assume(assets.type('/foo/bar.js')).to.equal('js');
       assume(assets.type('/foo/bar.css')).to.equal('css');
