@@ -31,7 +31,7 @@
     "illuminati": "0.0.x"
   },
   "dependencies": {
-    "async-script": "0.0.x",
+    "async-script": "0.0.0",
     "floppy": "1.0.x"
   }
 }
