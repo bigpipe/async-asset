@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/bigpipe/async-asset",
   "devDependencies": {
-    "illuminati": "0.0.x"
+    "illuminati": "0.0.5"
   },
   "dependencies": {
     "async-script": "0.0.x",
